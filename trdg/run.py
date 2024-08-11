@@ -6,7 +6,6 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import random as rnd
-import string
 import sys
 from multiprocessing import Pool
 
@@ -186,7 +185,7 @@ def parse_arguments():
         "-na",
         "--name_format",
         type=int,
-        help="Define how the produced files will be named. 0: [TEXT]_[ID].[EXT], 1: [ID]_[TEXT].[EXT] 2: [ID].[EXT] + one file labels.txt containing id-to-label mappings",
+        help="Define how the produced files will be named. 0: [TEXT]_[ID].[EXT], 1: [ID]_[TEXT].[EXT] 2: [ID].[EXT] + one file labels.txt containing id-to-label mappings 3: [FONT_NAME]_[ID].[EXT] without labels.txt",
         default=0,
     )
     parser.add_argument(

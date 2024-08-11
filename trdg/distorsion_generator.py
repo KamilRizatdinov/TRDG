@@ -3,16 +3,13 @@ import math
 import os
 import random as rnd
 import numpy as np
-from typing import Tuple
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 
-def _apply_func_distorsion(
-    image: Image, mask: Image, vertical: bool, horizontal: bool, max_offset: int, func
-) -> Tuple:
+def _apply_func_distorsion(image, mask, vertical, horizontal, max_offset, func):
     """
-    Apply a distortion to an image
+    Apply a distorsion to an image
     """
 
     # Nothing to do!
@@ -76,19 +73,19 @@ def _apply_func_distorsion(
         row_width = img_arr.shape[1]
         for i, o in enumerate(horizontal_offsets):
             if vertical:
-                new_img_arr_copy[
-                    i, max_offset + o : row_width + max_offset + o, :
-                ] = new_img_arr[i, max_offset : row_width + max_offset, :]
-                new_mask_arr_copy[
-                    i, max_offset + o : row_width + max_offset + o, :
-                ] = new_mask_arr[i, max_offset : row_width + max_offset, :]
+                new_img_arr_copy[i, max_offset + o : row_width + max_offset + o, :] = (
+                    new_img_arr[i, max_offset : row_width + max_offset, :]
+                )
+                new_mask_arr_copy[i, max_offset + o : row_width + max_offset + o, :] = (
+                    new_mask_arr[i, max_offset : row_width + max_offset, :]
+                )
             else:
-                new_img_arr[
-                    i, max_offset + o : row_width + max_offset + o, :
-                ] = img_arr[i, :, :]
-                new_mask_arr[
-                    i, max_offset + o : row_width + max_offset + o, :
-                ] = mask_arr[i, :, :]
+                new_img_arr[i, max_offset + o : row_width + max_offset + o, :] = (
+                    img_arr[i, :, :]
+                )
+                new_mask_arr[i, max_offset + o : row_width + max_offset + o, :] = (
+                    mask_arr[i, :, :]
+                )
 
     return (
         Image.fromarray(
@@ -100,14 +97,20 @@ def _apply_func_distorsion(
     )
 
 
-def sin(
-    image: Image, mask: Image, vertical: bool = False, horizontal: bool = False
-) -> Tuple:
+def sin(image, mask, vertical=False, horizontal=False):
     """
-    Apply a sine distortion on one or both of the specified axis
+    Apply a sine distorsion on one or both of the specified axis
     """
 
     max_offset = int(image.height**0.5)
+
+    fn_offset = rnd.randint(0, 180)
+    fn_distortion = rnd.randint(0, 100) // 100 // 100
+
+    def distortion_function(x):
+        return int(
+            math.sin(math.radians(x + fn_offset) + x * fn_distortion) * max_offset
+        )
 
     return _apply_func_distorsion(
         image,
@@ -115,15 +118,13 @@ def sin(
         vertical,
         horizontal,
         max_offset,
-        (lambda x: int(math.sin(math.radians(x)) * max_offset)),
+        distortion_function,
     )
 
 
-def cos(
-    image: Image, mask: Image, vertical: bool = False, horizontal: bool = False
-) -> Tuple:
+def cos(image, mask, vertical=False, horizontal=False):
     """
-    Apply a cosine distortion on one or both of the specified axis
+    Apply a cosine distorsion on one or both of the specified axis
     """
 
     max_offset = int(image.height**0.5)
@@ -138,11 +139,9 @@ def cos(
     )
 
 
-def random(
-    image: Image, mask: Image, vertical: bool = False, horizontal: bool = False
-) -> Tuple:
+def random(image, mask, vertical=False, horizontal=False):
     """
-    Apply a random distortion on one or both of the specified axis
+    Apply a random distorsion on one or both of the specified axis
     """
 
     max_offset = int(image.height**0.4)
